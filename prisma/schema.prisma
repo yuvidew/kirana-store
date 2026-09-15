@@ -1,0 +1,67 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+model Product {
+  id        Int      @id @default(autoincrement())
+  name      String
+  price     Decimal  @db.Decimal(10, 2)
+  unit      String
+  stock     Decimal  @default(0) @db.Decimal(10, 2)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  billItems      BillItem[]
+  stockMovements StockMovement[]
+}
+
+model Bill {
+  id            Int      @id @default(autoincrement())
+  customerName  String?
+  customerPhone String?
+  totalAmount   Decimal  @db.Decimal(10, 2)
+  createdAt     DateTime @default(now())
+
+  items          BillItem[]
+  stockMovements StockMovement[]
+}
+
+model BillItem {
+  id        Int     @id @default(autoincrement())
+  billId    Int
+  productId Int
+  quantity  Decimal @db.Decimal(10, 2)
+  unitPrice Decimal @db.Decimal(10, 2)
+  lineTotal Decimal @db.Decimal(10, 2)
+
+  bill    Bill    @relation(fields: [billId], references: [id])
+  product Product @relation(fields: [productId], references: [id])
+}
+
+enum StockMovementType {
+  RECEIVED
+  SOLD
+}
+
+model StockMovement {
+  id        Int               @id @default(autoincrement())
+  productId Int
+  type      StockMovementType
+  quantity  Decimal           @db.Decimal(10, 2)
+  billId    Int?
+  createdAt DateTime          @default(now())
+
+  product Product @relation(fields: [productId], references: [id])
+  bill    Bill?   @relation(fields: [billId], references: [id])
+}
