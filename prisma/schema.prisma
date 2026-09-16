@@ -13,14 +13,18 @@ datasource db {
 }
 
 model Product {
-  id        Int      @id @default(autoincrement())
-  name      String
-  price     Decimal  @db.Decimal(10, 2)
-  unit      String
-  stock     Decimal  @default(0) @db.Decimal(10, 2)
-  isActive  Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                Int       @id @default(autoincrement())
+  name              String
+  category          String    @default("")
+  price             Decimal   @db.Decimal(10, 2)
+  costPrice         Decimal   @default(0) @db.Decimal(10, 2)
+  unit              String
+  stock             Decimal   @default(0) @db.Decimal(10, 2)
+  lowStockThreshold Decimal?  @db.Decimal(10, 2)
+  expiryDate        DateTime?
+  isActive          Boolean   @default(true)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
 
   billItems      BillItem[]
   stockMovements StockMovement[]

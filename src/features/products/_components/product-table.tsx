@@ -1,3 +1,4 @@
+import { format } from "date-fns";
 import { MoreHorizontalIcon } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
@@ -36,41 +37,57 @@ export const ProductTable = ({
       <TableHeader>
         <TableRow>
           <TableHead>Name</TableHead>
+          <TableHead>Category</TableHead>
           <TableHead>Unit</TableHead>
           <TableHead>Price</TableHead>
           <TableHead>Stock</TableHead>
+          <TableHead>Expiry</TableHead>
           <TableHead>Status</TableHead>
           <TableHead className="w-10" />
         </TableRow>
       </TableHeader>
       <TableBody>
-        {products.map((product) => (
-          <TableRow key={product.id}>
-            <TableCell className="font-medium">{product.name}</TableCell>
-            <TableCell>{product.unit}</TableCell>
-            <TableCell>{formatCurrency(product.price)}</TableCell>
-            <TableCell>{product.stock}</TableCell>
-            <TableCell>
-              <Badge variant={product.isActive ? "default" : "secondary"}>
-                {product.isActive ? "Active" : "Inactive"}
-              </Badge>
-            </TableCell>
-            <TableCell>
-              <DropdownMenu>
-                <DropdownMenuTrigger render={<Button variant="ghost" size="icon-sm" />}>
-                  <MoreHorizontalIcon />
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={() => onEdit(product)}>Edit</DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => onAddStock(product)}>Add stock</DropdownMenuItem>
-                  {product.isActive && (
-                    <DropdownMenuItem onClick={() => onDeactivate(product)}>Deactivate</DropdownMenuItem>
-                  )}
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </TableCell>
-          </TableRow>
-        ))}
+        {products.map((product) => {
+          const isLowStock =
+            product.lowStockThreshold != null && Number(product.stock) <= Number(product.lowStockThreshold);
+
+          return (
+            <TableRow key={product.id}>
+              <TableCell className="font-medium">{product.name}</TableCell>
+              <TableCell>{product.category}</TableCell>
+              <TableCell>{product.unit}</TableCell>
+              <TableCell>{formatCurrency(product.price)}</TableCell>
+              <TableCell>
+                <div className="flex items-center gap-2">
+                  {product.stock}
+                  {isLowStock && <Badge variant="destructive">Low stock</Badge>}
+                </div>
+              </TableCell>
+              <TableCell>
+                {product.expiryDate ? format(new Date(product.expiryDate), "PP") : "—"}
+              </TableCell>
+              <TableCell>
+                <Badge variant={product.isActive ? "default" : "secondary"}>
+                  {product.isActive ? "Active" : "Inactive"}
+                </Badge>
+              </TableCell>
+              <TableCell>
+                <DropdownMenu>
+                  <DropdownMenuTrigger render={<Button variant="ghost" size="icon-sm" />}>
+                    <MoreHorizontalIcon />
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem onClick={() => onEdit(product)}>Edit</DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => onAddStock(product)}>Add stock</DropdownMenuItem>
+                    {product.isActive && (
+                      <DropdownMenuItem onClick={() => onDeactivate(product)}>Deactivate</DropdownMenuItem>
+                    )}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </TableCell>
+            </TableRow>
+          );
+        })}
       </TableBody>
     </Table>
   );

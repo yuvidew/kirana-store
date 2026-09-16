@@ -11,9 +11,13 @@ import type { Product, ProductsResponse, CreateProductResponse } from "@/feature
 export const toProductDto = (product: ProductModel): Product => ({
   id: product.id,
   name: product.name,
+  category: product.category,
   price: product.price.toString(),
+  costPrice: product.costPrice.toString(),
   unit: product.unit,
   stock: product.stock.toString(),
+  lowStockThreshold: product.lowStockThreshold?.toString() ?? null,
+  expiryDate: product.expiryDate?.toISOString() ?? null,
   isActive: product.isActive,
   createdAt: product.createdAt.toISOString(),
   updatedAt: product.updatedAt.toISOString(),
@@ -21,9 +25,13 @@ export const toProductDto = (product: ProductModel): Product => ({
 
 const CreateProductSchema = z.object({
   name: z.string().trim().min(1, { error: "Product name is required." }),
+  category: z.string().trim().min(1, { error: "Category is required." }),
   price: z.number().positive({ error: "Price must be greater than 0." }),
+  costPrice: z.number().nonnegative({ error: "Cost price can't be negative." }),
   unit: z.enum(PRODUCT_UNITS, { error: "Please select a valid unit." }),
   initialStock: z.number().nonnegative({ error: "Initial stock can't be negative." }).optional(),
+  lowStockThreshold: z.number().nonnegative({ error: "Low-stock threshold can't be negative." }).optional(),
+  expiryDate: z.string().optional(),
 });
 
 // Default page size for the product list — small enough to keep the table
@@ -52,7 +60,7 @@ export const GET = async (request: Request) => {
   const pageSize = Math.max(1, Number(searchParams.get("pageSize")) || DEFAULT_PAGE_SIZE);
 
   const where = {
-    ...(search ? { name: { contains: search } } : {}),
+    ...(search ? { OR: [{ name: { contains: search } }, { category: { contains: search } }] } : {}),
     ...(unit ? { unit } : {}),
     ...(status === "all" ? {} : { isActive: status === "active" }),
   };
@@ -84,7 +92,8 @@ export const GET = async (request: Request) => {
  * Creates a product. If `initialStock` is provided and greater than 0, also
  * writes a `RECEIVED` `StockMovement` row in the same transaction, so
  * StockMovement stays the single source of truth for every stock change.
- * @param request - JSON body: `{ name, price, unit, initialStock? }`.
+ * @param request - JSON body: `{ name, category, price, costPrice, unit,
+ * initialStock?, lowStockThreshold?, expiryDate? }`.
  */
 export const POST = async (request: Request) => {
   await verifySession();
@@ -99,12 +108,22 @@ export const POST = async (request: Request) => {
     );
   }
 
-  const { name, price, unit, initialStock } = validatedFields.data;
+  const { name, category, price, costPrice, unit, initialStock, lowStockThreshold, expiryDate } =
+    validatedFields.data;
 
   try {
     const product = await db.$transaction(async (tx) => {
       const created = await tx.product.create({
-        data: { name, price, unit, stock: initialStock ?? 0 },
+        data: {
+          name,
+          category,
+          price,
+          costPrice,
+          unit,
+          stock: initialStock ?? 0,
+          lowStockThreshold,
+          expiryDate: expiryDate ? new Date(expiryDate) : undefined,
+        },
       });
 
       if (initialStock && initialStock > 0) {
