@@ -147,6 +147,7 @@ export const ProductFormDialog = ({
                   min="0.01"
                   defaultValue={product?.price}
                   required
+                  className="font-mono tabular-nums"
                 />
               </Field>
               <Field>
@@ -159,6 +160,7 @@ export const ProductFormDialog = ({
                   min="0"
                   defaultValue={product?.costPrice}
                   required
+                  className="font-mono tabular-nums"
                 />
               </Field>
             </div>
@@ -172,6 +174,7 @@ export const ProductFormDialog = ({
                   step="0.01"
                   min="0"
                   defaultValue={product?.lowStockThreshold ?? ""}
+                  className="font-mono tabular-nums"
                 />
               </Field>
               <Field>
@@ -196,7 +199,7 @@ export const ProductFormDialog = ({
                     id="initialStock"
                     value={initialStock}
                     readOnly
-                    className="text-center"
+                    className="text-center font-mono tabular-nums"
                   />
                   <InputGroupAddon align="inline-end">
                     <InputGroupButton

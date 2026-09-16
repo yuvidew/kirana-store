@@ -80,7 +80,7 @@ export const ProductsView = () => {
   return (
     <div className="flex flex-col gap-4 p-6">
       <div className="flex items-center justify-between gap-4">
-        <h1 className="text-lg font-medium">Products</h1>
+        <h1 className="font-heading text-xl font-semibold tracking-tight">Products</h1>
         <Button onClick={() => setIsCreateOpen(true)}>
           <PlusIcon />
           Add product
@@ -161,7 +161,7 @@ export const ProductsView = () => {
             onDeactivate={setDeactivateTarget}
           />
           <div className="flex items-center justify-between">
-            <p className="text-sm text-muted-foreground">
+            <p className="font-mono text-sm tabular-nums text-muted-foreground">
               Page {page} of {totalPages}
             </p>
             <div className="flex gap-2">

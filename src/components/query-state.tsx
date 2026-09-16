@@ -23,7 +23,7 @@ export const LoadingCard = ({
 }) => {
   return (
     <div className={cn("flex min-h-64 items-center justify-center", className)}>
-      <Card className="w-full max-w-sm">
+      <Card className="w-full max-w-sm border shadow-none">
         <CardContent className="flex flex-col items-center gap-3 py-10 text-center">
           <Spinner className="size-6" />
           <div>
@@ -57,7 +57,7 @@ export const ErrorCard = ({
 }) => {
   return (
     <div className={cn("flex min-h-64 items-center justify-center", className)}>
-      <Card className="w-full max-w-sm border-destructive/30">
+      <Card className="w-full max-w-sm border-destructive/30 shadow-none">
         <CardContent className="flex flex-col items-center gap-3 py-10 text-center">
           <AlertTriangleIcon className="size-6 text-destructive" />
           <div>

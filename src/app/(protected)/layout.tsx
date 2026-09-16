@@ -16,8 +16,8 @@ const ProtectedLayout = async ({ children }: { children: React.ReactNode }) => {
     <SidebarProvider>
       <AppSidebar />
       <SidebarInset>
-        <header className="flex items-center gap-2 border-b px-4 py-3">
-          <span className="font-heading text-sm font-medium">Kirana Store</span>
+        <header className="flex items-center gap-2 border-b-2 border-b-primary/20 px-4 py-3">
+          <span className="font-heading text-sm font-semibold tracking-tight">Kirana Store</span>
         </header>
         <main className="flex-1">{children}</main>
       </SidebarInset>
