@@ -33,16 +33,16 @@ export const ProductTable = ({
   onDeactivate: (product: Product) => void;
 }) => {
   return (
-    <Table>
-      <TableHeader>
-        <TableRow>
+    <Table className="border">
+      <TableHeader className="bg-secondary">
+        <TableRow className="divide-x divide-border bg-secondary">
           <TableHead>Name</TableHead>
           <TableHead>Category</TableHead>
           <TableHead>Unit</TableHead>
-          <TableHead>Price</TableHead>
-          <TableHead>Stock</TableHead>
-          <TableHead>Expiry</TableHead>
-          <TableHead>Status</TableHead>
+          <TableHead className="text-right">Price</TableHead>
+          <TableHead className="text-right">Stock</TableHead>
+          <TableHead className="text-center">Expiry</TableHead>
+          <TableHead className="text-center">Status</TableHead>
           <TableHead className="w-10" />
         </TableRow>
       </TableHeader>
@@ -52,22 +52,24 @@ export const ProductTable = ({
             product.lowStockThreshold != null && Number(product.stock) <= Number(product.lowStockThreshold);
 
           return (
-            <TableRow key={product.id}>
+            <TableRow key={product.id} className="divide-x divide-border">
               <TableCell className="font-medium">{product.name}</TableCell>
               <TableCell>{product.category}</TableCell>
               <TableCell>{product.unit}</TableCell>
-              <TableCell>{formatCurrency(product.price)}</TableCell>
-              <TableCell>
-                <div className="flex items-center gap-2">
-                  {product.stock}
+              <TableCell className="text-right font-mono tabular-nums">
+                {formatCurrency(product.price)}
+              </TableCell>
+              <TableCell className="text-right font-mono tabular-nums">
+                <div className="flex items-center justify-end gap-2">
+                  <span className="font-mono text-right tabular-nums">{product.stock}</span>
                   {isLowStock && <Badge variant="destructive">Low stock</Badge>}
                 </div>
               </TableCell>
-              <TableCell>
+              <TableCell className="text-center font-mono tabular-nums">
                 {product.expiryDate ? format(new Date(product.expiryDate), "PP") : "—"}
               </TableCell>
-              <TableCell>
-                <Badge variant={product.isActive ? "default" : "secondary"}>
+              <TableCell  className="text-center font-mono tabular-nums">
+                <Badge variant={product.isActive ? "success" : "destructive"}>
                   {product.isActive ? "Active" : "Inactive"}
                 </Badge>
               </TableCell>

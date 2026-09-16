@@ -58,7 +58,15 @@ export const AddStockDialog = ({
           <FieldGroup>
             <Field>
               <FieldLabel htmlFor="quantity">Quantity received</FieldLabel>
-              <Input id="quantity" name="quantity" type="number" step="0.01" min="0.01" required />
+              <Input
+                id="quantity"
+                name="quantity"
+                type="number"
+                step="0.01"
+                min="0.01"
+                required
+                className="font-mono tabular-nums"
+              />
             </Field>
             <DialogFooter>
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>

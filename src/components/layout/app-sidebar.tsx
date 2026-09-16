@@ -42,7 +42,9 @@ export const AppSidebar = () => {
   return (
     <Sidebar>
       <SidebarHeader>
-        <span className="px-2 py-1 font-heading text-sm font-medium">Kirana Store</span>
+        <span className="border-b border-sidebar-border px-2 pt-1 pb-3 font-heading text-base font-semibold tracking-tight">
+          Kirana Store
+        </span>
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>

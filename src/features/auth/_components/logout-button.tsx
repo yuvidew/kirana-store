@@ -11,7 +11,6 @@ export const LogoutButton = () => {
   return (
     <Button
       type="button"
-      variant="outline"
       size="sm"
       disabled={logoutMutation.isPending}
       onClick={() => logoutMutation.mutate()}

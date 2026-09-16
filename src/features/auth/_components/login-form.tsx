@@ -36,9 +36,9 @@ export const LoginForm = () => {
   };
 
   return (
-    <Card className="w-full max-w-sm">
+    <Card className="w-full max-w-sm border shadow-none">
       <CardHeader>
-        <CardTitle>Kirana Store</CardTitle>
+        <CardTitle>Sign in</CardTitle>
         <CardDescription>Sign in with your admin credentials.</CardDescription>
       </CardHeader>
       <CardContent>
