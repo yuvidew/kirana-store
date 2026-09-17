@@ -33,7 +33,7 @@ export const ProductTable = ({
   onDeactivate: (product: Product) => void;
 }) => {
   return (
-    <Table className="border">
+    <Table className="border bg-card p-3">
       <TableHeader className="bg-secondary">
         <TableRow className="divide-x divide-border bg-secondary">
           <TableHead>Name</TableHead>
