@@ -30,3 +30,39 @@ export type Bill = {
 export type BillResponse = {
   bill: Bill;
 };
+
+/** Payment-status filter for the bills list — "all" applies no isCredit filter. */
+export const BILL_PAYMENT_FILTERS = ["all", "cash", "udhaar"] as const;
+export type BillPaymentFilter = (typeof BILL_PAYMENT_FILTERS)[number];
+
+/**
+ * Lightweight row shape for the bills list/history table — an `itemCount`
+ * instead of full `items`, since the list endpoint doesn't eager-load line
+ * items/products the way the single-bill detail endpoint does.
+ */
+export type BillListItem = {
+  id: number;
+  customerName: string | null;
+  customerPhone: string | null;
+  isCredit: boolean;
+  totalAmount: string;
+  itemCount: number;
+  createdAt: string;
+};
+
+export type BillsQuery = {
+  search?: string;
+  payment?: BillPaymentFilter;
+  dateFrom?: string; // "yyyy-MM-dd", inclusive, local calendar day
+  dateTo?: string; // "yyyy-MM-dd", inclusive, local calendar day
+  page?: number;
+  pageSize?: number;
+};
+
+export type BillsResponse = {
+  bills: BillListItem[];
+  page: number;
+  pageSize: number;
+  totalCount: number;
+  totalPages: number;
+};

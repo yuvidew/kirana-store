@@ -9,7 +9,8 @@ import { formatCurrency } from "@/lib/utils";
 import type { RecentBillItem } from "../types";
 
 /**
- * The most recent bills, each linking to its receipt page.
+ * The most recent bills, each linking to the bills list with a `?billId=`
+ * param that opens that bill's receipt dialog there.
  * @param bills - The recent bills to list, newest first.
  */
 export const RecentBillsList = ({ bills }: { bills: RecentBillItem[] }) => {
@@ -30,7 +31,7 @@ export const RecentBillsList = ({ bills }: { bills: RecentBillItem[] }) => {
           <ul className="flex flex-col gap-3">
             {bills.map((bill) => (
               <li key={bill.id}>
-                <Link href={`/bills/${bill.id}`} className="flex items-center justify-between gap-2 text-sm hover:underline">
+                <Link href={`/bills?billId=${bill.id}`} className="flex items-center justify-between gap-2 text-sm hover:underline">
                   <span className="flex items-center gap-2">
                     <span className="font-medium">{bill.customerName ?? "Walk-in"}</span>
                     {bill.isCredit && <Badge variant="secondary">Udhaar</Badge>}

@@ -9,7 +9,15 @@ import type {
 import { calculateBillTotals } from "@/lib/billing";
 import { db } from "@/lib/db";
 import { verifySession } from "@/lib/dal";
-import type { Bill, BillItemDto, BillResponse } from "@/features/bills/types";
+import { BILL_PAYMENT_FILTERS } from "@/features/bills/types";
+import type {
+  Bill,
+  BillItemDto,
+  BillListItem,
+  BillPaymentFilter,
+  BillResponse,
+  BillsResponse,
+} from "@/features/bills/types";
 
 type BillWithItems = BillModel & { items: (BillItemModel & { product: ProductModel })[] };
 
@@ -159,5 +167,101 @@ export const POST = async (request: Request) => {
       return NextResponse.json({ error: error.message }, { status: 400 });
     }
     return NextResponse.json({ error: "Something went wrong generating the bill." }, { status: 500 });
+  }
+};
+
+type BillListRow = Pick<
+  BillModel,
+  "id" | "customerName" | "customerPhone" | "isCredit" | "totalAmount" | "createdAt"
+> & { _count: { items: number } };
+
+/** Maps a Prisma `Bill` row (selected with `_count.items`) to the bills-list row shape — no item/product join needed. */
+const toBillListItemDto = (bill: BillListRow): BillListItem => ({
+  id: bill.id,
+  customerName: bill.customerName,
+  customerPhone: bill.customerPhone,
+  isCredit: bill.isCredit,
+  totalAmount: bill.totalAmount.toString(),
+  itemCount: bill._count.items,
+  createdAt: bill.createdAt.toISOString(),
+});
+
+const DEFAULT_PAGE_SIZE = 10;
+
+/**
+ * Lists bills, filtered by customer name/phone search, payment mode, and a
+ * created-date range, paginated and sorted latest-first.
+ * @param request - Query params: `search?` (matches customerName OR
+ * customerPhone), `payment?` ("all"/"cash"/"udhaar", default "all"),
+ * `dateFrom?`/`dateTo?` (inclusive "yyyy-MM-dd"), `page?` (default 1),
+ * `pageSize?` (default 10).
+ */
+export const GET = async (request: Request) => {
+  await verifySession();
+
+  const { searchParams } = new URL(request.url);
+  const search = searchParams.get("search")?.trim() || undefined;
+  const paymentParam = searchParams.get("payment");
+  const payment = (BILL_PAYMENT_FILTERS as readonly string[]).includes(paymentParam ?? "")
+    ? (paymentParam as BillPaymentFilter)
+    : "all";
+  const dateFromParam = searchParams.get("dateFrom");
+  const dateToParam = searchParams.get("dateTo");
+  const page = Math.max(1, Number(searchParams.get("page")) || 1);
+  const pageSize = Math.max(1, Number(searchParams.get("pageSize")) || DEFAULT_PAGE_SIZE);
+
+  // "dateTo" is treated as inclusive of the whole day by pushing the upper
+  // bound to the next local midnight, rather than depending on a
+  // time-of-day component in the incoming "yyyy-MM-dd" string.
+  const createdAtFilter: { gte?: Date; lt?: Date } = {};
+  if (dateFromParam) {
+    const from = new Date(dateFromParam);
+    if (!Number.isNaN(from.getTime())) createdAtFilter.gte = from;
+  }
+  if (dateToParam) {
+    const to = new Date(dateToParam);
+    if (!Number.isNaN(to.getTime())) {
+      to.setDate(to.getDate() + 1);
+      createdAtFilter.lt = to;
+    }
+  }
+
+  const where = {
+    ...(search
+      ? { OR: [{ customerName: { contains: search } }, { customerPhone: { contains: search } }] }
+      : {}),
+    ...(payment === "all" ? {} : { isCredit: payment === "udhaar" }),
+    ...(Object.keys(createdAtFilter).length ? { createdAt: createdAtFilter } : {}),
+  };
+
+  try {
+    const [bills, totalCount] = await Promise.all([
+      db.bill.findMany({
+        where,
+        orderBy: { createdAt: "desc" },
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+        select: {
+          id: true,
+          customerName: true,
+          customerPhone: true,
+          isCredit: true,
+          totalAmount: true,
+          createdAt: true,
+          _count: { select: { items: true } },
+        },
+      }),
+      db.bill.count({ where }),
+    ]);
+
+    return NextResponse.json<BillsResponse>({
+      bills: bills.map(toBillListItemDto),
+      page,
+      pageSize,
+      totalCount,
+      totalPages: Math.max(1, Math.ceil(totalCount / pageSize)),
+    });
+  } catch {
+    return NextResponse.json({ error: "Something went wrong loading bills." }, { status: 500 });
   }
 };

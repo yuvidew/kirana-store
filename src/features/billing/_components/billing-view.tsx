@@ -28,7 +28,8 @@ export type BillLineItem = {
  * Bill-generation page: a two-column checkout layout — the cart (product
  * picker + line items) on the left, a sticky order-summary/checkout panel
  * on the right (stacks below the cart on narrow screens). Redirects to the
- * new bill's receipt page (`/bills/[id]`) on success.
+ * bills list on success, with a `?billId=` param that opens the new bill's
+ * receipt dialog there.
  */
 export const BillingView = () => {
   const router = useRouter();
@@ -90,7 +91,7 @@ export const BillingView = () => {
         discountValue,
         items: lineItems.map(({ productId, quantity }) => ({ productId, quantity })),
       },
-      { onSuccess: (bill) => router.push(`/bills/${bill.id}`) }
+      { onSuccess: (bill) => router.push(`/bills?billId=${bill.id}`) }
     );
   };
 
