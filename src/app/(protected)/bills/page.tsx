@@ -1,13 +1,6 @@
-/** /bills — placeholder until Phase 5 builds the bills list/history. */
-const BillsPage = () => {
-  return (
-    <div className="p-6">
-      <h1 className="text-lg font-medium">Bills</h1>
-      <p className="text-sm text-muted-foreground">
-        Built in Phase 5 — this placeholder confirms the authenticated route is reachable.
-      </p>
-    </div>
-  );
-};
+import { BillsView } from "@/features/bills/_components/bills-view";
+
+/** /bills — bill list/history: search, filter by date range and payment status, paginated table. */
+const BillsPage = () => <BillsView />;
 
 export default BillsPage;
