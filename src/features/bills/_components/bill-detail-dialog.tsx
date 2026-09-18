@@ -44,7 +44,7 @@ export const BillDetailDialog = ({
 
   return (
     <Dialog open={billId !== null} onOpenChange={onOpenChange}>
-      <DialogContent className="flex max-h-[85vh] flex-col overflow-y-auto sm:max-w-2xl">
+      <DialogContent className="flex max-h-[85vh] pt-14 flex-col overflow-y-auto sm:max-w-2xl">
         {isLoading ? (
           <LoadingCard title="Loading bill…" />
         ) : isError || !bill ? (
