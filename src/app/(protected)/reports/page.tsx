@@ -1,13 +1,6 @@
-/** /reports — placeholder until Phase 6 builds reports & analytics. */
-const ReportsPage = () => {
-  return (
-    <div className="p-6">
-      <h1 className="text-lg font-medium">Reports</h1>
-      <p className="text-sm text-muted-foreground">
-        Built in Phase 6 — this placeholder confirms the authenticated route is reachable.
-      </p>
-    </div>
-  );
-};
+import { ReportsView } from "@/features/reports/_components/reports-view";
+
+/** /reports — reports & analytics: period selector, sales trend, bills-per-day, and stock-movement charts, plus a top-selling-products table for the selected period. */
+const ReportsPage = () => <ReportsView />;
 
 export default ReportsPage;
