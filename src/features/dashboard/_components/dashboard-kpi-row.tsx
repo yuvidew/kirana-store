@@ -1,9 +1,9 @@
 import { CalendarIcon, ReceiptTextIcon, TrendingUpIcon, WarehouseIcon } from "lucide-react";
 
+import { StatCard } from "@/components/stat-card";
 import { formatCurrency } from "@/lib/utils";
 
 import type { DashboardKpis, InventoryValuation } from "../types";
-import { StatCard } from "./stat-card";
 
 /**
  * The dashboard's top row of KPI tiles: today's and this month's revenue and
